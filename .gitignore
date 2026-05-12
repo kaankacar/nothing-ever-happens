@@ -19,3 +19,10 @@ deployments/local/
 
 # Local Claude Code session state — not part of the project
 .claude/
+
+# Per-service local data dirs (SQLite, runner.json, etc.)
+data/
+**/data/
+*.db
+*.db-wal
+*.db-shm
