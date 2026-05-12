@@ -49,33 +49,37 @@ export function Graph() {
 
   return (
     <div className="graph-container" ref={wrapRef}>
-      {data.nodes.length === 0 ? (
-        <p className="empty">MiroFish graph will appear here once the simulation starts.</p>
-      ) : (
-        <ForceGraph2D
-          width={size.w}
-          height={size.h}
-          graphData={data}
-          backgroundColor="#0a0e14"
-          nodeRelSize={3}
-          linkColor={() => "rgba(124,134,150,0.35)"}
-          linkWidth={(l: any) => Math.min(2, 0.4 + 0.15 * (l.value ?? 1))}
-          onNodeClick={(node: any) => setSelectedNode(String(node.id))}
-          nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, scale: number) => {
-            const r = Math.max(2.5, (node.val ?? 1) * 1.8);
-            ctx.beginPath();
-            ctx.fillStyle = CLUSTER_COLORS[node.cluster] ?? "#7c8696";
-            ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-            ctx.fill();
-            if (scale > 2.5) {
-              ctx.fillStyle = "rgba(212,218,227,0.7)";
-              ctx.font = `${10 / scale}px -apple-system, sans-serif`;
-              ctx.fillText(node.label, node.x + r + 1, node.y + 3);
-            }
-          }}
-          cooldownTime={Infinity}
-          d3VelocityDecay={0.25}
-        />
+      {/* Canvas always renders — even with zero nodes it draws the dark
+       *  background, so the user never sees an empty white box. An overlay
+       *  hint takes the place of the old "graph will appear here" copy. */}
+      <ForceGraph2D
+        width={size.w}
+        height={size.h}
+        graphData={data}
+        backgroundColor="#0a0e14"
+        nodeRelSize={3}
+        linkColor={() => "rgba(124,134,150,0.35)"}
+        linkWidth={(l: any) => Math.min(2, 0.4 + 0.15 * (l.value ?? 1))}
+        onNodeClick={(node: any) => setSelectedNode(String(node.id))}
+        nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, scale: number) => {
+          const r = Math.max(2.5, (node.val ?? 1) * 1.8);
+          ctx.beginPath();
+          ctx.fillStyle = CLUSTER_COLORS[node.cluster] ?? "#7c8696";
+          ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+          ctx.fill();
+          if (scale > 2.5) {
+            ctx.fillStyle = "rgba(212,218,227,0.7)";
+            ctx.font = `${10 / scale}px -apple-system, sans-serif`;
+            ctx.fillText(node.label, node.x + r + 1, node.y + 3);
+          }
+        }}
+        cooldownTime={Infinity}
+        d3VelocityDecay={0.25}
+      />
+      {data.nodes.length === 0 && (
+        <div className="graph-overlay">
+          waiting for simulator to spawn personas …
+        </div>
       )}
     </div>
   );

@@ -86,6 +86,11 @@ export async function simulate(opts: SimulateOptions): Promise<SimulationResult>
       };
       await onMessage(message);
       void argued; // currently unused — could be surfaced as edge metadata later
+      // Emit a snapshot every few messages too, so the graph visibly grows
+      // during the simulation instead of jumping in just twice per round.
+      if (seq % 5 === 0) {
+        await onSnapshot(buildSnapshot(scenario.roundId, tick, personas, edges));
+      }
     }
     await onSnapshot(buildSnapshot(scenario.roundId, tick, personas, edges));
   }
