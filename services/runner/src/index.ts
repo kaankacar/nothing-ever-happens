@@ -165,7 +165,7 @@ app.post("/agents/connected/confirm", async (c) => {
 });
 
 const port = config.port;
-serve({ fetch: app.fetch, port });
+serve({ fetch: app.fetch, port, hostname: "0.0.0.0" });
 console.log(`[runner] http://localhost:${port}`);
 
 // Crash-loudly so the next failure leaves a stack instead of silent exit.

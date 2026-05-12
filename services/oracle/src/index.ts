@@ -161,7 +161,7 @@ app.get("/events", (c) =>
 );
 
 const port = config.port;
-serve({ fetch: app.fetch, port });
+serve({ fetch: app.fetch, port, hostname: "0.0.0.0" });
 console.log(`[oracle] http://localhost:${port}`);
 console.log(`[oracle] starting scheduler …`);
 startScheduler().catch((e) => {

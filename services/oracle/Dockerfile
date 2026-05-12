@@ -20,8 +20,13 @@ COPY services/oracle ./services/oracle
 # Install only the oracle + shared package deps
 RUN pnpm install --frozen-lockfile --filter @mirofish/oracle... --filter @mirofish/shared
 
-# Rebuild native modules now that python/g++ are present
-RUN pnpm rebuild better-sqlite3 || true
+# Explicitly run the better-sqlite3 install script — pnpm skips it by default
+# under the build-script-allowlist policy, and `pnpm rebuild` silently no-ops
+# if the package's build script never executed.
+RUN cd $(pnpm root -w)/.pnpm/better-sqlite3@*/node_modules/better-sqlite3 \
+    && npm run install \
+    && test -f build/Release/better_sqlite3.node \
+    && echo "better-sqlite3 native binding built at $(pwd)"
 
 FROM node:20-bookworm-slim
 WORKDIR /app
