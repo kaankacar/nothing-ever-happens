@@ -1,0 +1,33 @@
+# Runner service — hosted-prompt agents that commit/reveal each round.
+
+primary_region = "ord"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  STELLAR_NETWORK = "testnet"
+  STELLAR_RPC_URL = "https://soroban-testnet.stellar.org"
+  STELLAR_HORIZON_URL = "https://horizon-testnet.stellar.org"
+  STELLAR_NETWORK_PASSPHRASE = "Test SDF Network ; September 2015"
+  RUNNER_PORT = "4001"
+  RUNNER_DB_PATH = "/data/runner.json"
+  FRIENDBOT_URL = "https://friendbot.stellar.org"
+  SKIP_AGENT_LLM = "0"
+
+[http_service]
+  internal_port = 4001
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = false
+  min_machines_running = 1
+  processes = ["app"]
+
+[[mounts]]
+  source = "runner_data"
+  destination = "/data"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

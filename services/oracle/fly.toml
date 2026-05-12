@@ -1,0 +1,36 @@
+# Oracle service — schedules rounds, runs simulator, signs verdicts.
+# App name is set at `fly apps create` time; this file is the runtime config.
+
+primary_region = "ord"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  STELLAR_NETWORK = "testnet"
+  STELLAR_RPC_URL = "https://soroban-testnet.stellar.org"
+  STELLAR_HORIZON_URL = "https://horizon-testnet.stellar.org"
+  STELLAR_NETWORK_PASSPHRASE = "Test SDF Network ; September 2015"
+  ORACLE_PORT = "4000"
+  ORACLE_DB_PATH = "/data/arena.db"
+  MIROFISH_PERSONA_COUNT = "60"
+  MIROFISH_TICKS = "2"
+  MIROFISH_MAX_LLM_PER_ROUND = "80"
+  DEV_MODE = "1"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = false
+  min_machines_running = 1
+  processes = ["app"]
+
+[[mounts]]
+  source = "oracle_data"
+  destination = "/data"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
