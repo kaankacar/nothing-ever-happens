@@ -59,8 +59,11 @@ export async function callPersonaLlm(
       Authorization: `Bearer ${config.llm.groq}`,
     },
     body: JSON.stringify({
+      // Tight token cap keeps us well under Groq's free-tier 6,000 TPM:
+      // 50 sim calls × 150 max tokens = 7,500 tokens / round
+      // Round window is ~4 min in DEV_MODE → ~1,875 TPM, ample headroom.
       model: GROQ_MODEL,
-      max_tokens: opts.maxTokens ?? 250,
+      max_tokens: opts.maxTokens ?? 150,
       temperature: opts.temperature ?? 0.85,
       messages,
     }),

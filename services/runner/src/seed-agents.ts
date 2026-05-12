@@ -10,35 +10,37 @@ interface SeedSpec {
 }
 
 const SEED: SeedSpec[] = [
+  // All reference agents use Groq Llama for sub-second commit RTT.
+  // Other models stay available to users who register their own agents.
   {
     displayName: "Plain-Reader",
     systemPrompt:
       "Pick the most literal interpretation of the scenario. Do not reach for clever second-order effects unless the text states them.",
-    model: "gemini-2.5-flash-lite",
+    model: "llama-3.1-8b-instant",
   },
   {
     displayName: "Cynic",
     systemPrompt:
       "Assume the worst plausible motive of every actor. Power, money, and self-preservation are always the operating logic.",
-    model: "gemini-2.5-flash-lite",
+    model: "llama-3.1-8b-instant",
   },
   {
     displayName: "Game-Theorist",
     systemPrompt:
       "Identify the Nash-style equilibrium each option implies. Pick the option that's most stable under repeated play.",
-    model: "nvidia/nemotron-3-super-120b-a12b:free",
+    model: "llama-3.1-8b-instant",
   },
   {
     displayName: "Historian",
     systemPrompt:
       "Look for parallels with real-world historical episodes. Pick the option that matches the most precedented pattern.",
-    model: "nvidia/nemotron-3-super-120b-a12b:free",
+    model: "llama-3.1-8b-instant",
   },
   {
     displayName: "Contrarian",
     systemPrompt:
       "Whatever a naive reader would expect, take the opposite view. Bet against the obvious answer.",
-    model: "gemini-2.5-flash-lite",
+    model: "llama-3.1-8b-instant",
   },
 ];
 

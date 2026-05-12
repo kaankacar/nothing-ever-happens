@@ -49,9 +49,10 @@ export const config = {
   devMode: process.env.DEV_MODE === "1",
 
   /** Round cadence in seconds (overridden by devMode). Reveal window is wide
-   *  enough to accommodate the LLM-paced simulator (which runs during it). */
-  roundSeconds: process.env.DEV_MODE === "1" ? 180 : 300,
-  commitWindowSeconds: process.env.DEV_MODE === "1" ? 60 : 180,
+   *  enough to accommodate the LLM-paced simulator (which runs during it).
+   *  Commit window bumped to 120s so Gemini/Nemotron-backed agents have time. */
+  roundSeconds: process.env.DEV_MODE === "1" ? 240 : 300,
+  commitWindowSeconds: process.env.DEV_MODE === "1" ? 120 : 180,
   revealWindowSeconds: process.env.DEV_MODE === "1" ? 120 : 120,
 
   /** How many ledgers ahead the seed ledger should be (~5s per ledger). */

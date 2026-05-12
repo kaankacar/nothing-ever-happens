@@ -15,7 +15,7 @@ primary_region = "ord"
   ORACLE_DB_PATH = "/data/arena.db"
   MIROFISH_PERSONA_COUNT = "60"
   MIROFISH_TICKS = "2"
-  MIROFISH_MAX_LLM_PER_ROUND = "80"
+  MIROFISH_MAX_LLM_PER_ROUND = "50"
   DEV_MODE = "1"
 
 [http_service]
