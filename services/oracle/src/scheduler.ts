@@ -200,6 +200,7 @@ async function runOneRound(): Promise<void> {
   // Sign verdict and settle.
   const key = config.oracleSigningSecret ? deriveKey(config.oracleSigningSecret) : null;
   let resolution: RoundResolution;
+  let settledOnChain = false;
   if (key) {
     const payload = settlePayload(onChainRoundId, questionHash, seedHex, sim.verdict);
     const signature = sign(payload, key);
@@ -214,10 +215,25 @@ async function runOneRound(): Promise<void> {
       resolvedAt: new Date().toISOString(),
     };
     if (config.contractId && config.oracleStellarSecret) {
-      try {
-        await settleOnChain(onChainRoundId, sim.verdict, seedHex, signature);
-      } catch (err) {
-        console.warn("settle on-chain failed (continuing)", err);
+      // Retry settle up to 3× — transient ledger-timing or RPC issues
+      // shouldn't leave a round stuck in "Sealed" forever.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          await settleOnChain(onChainRoundId, sim.verdict, seedHex, signature);
+          settledOnChain = true;
+          break;
+        } catch (err) {
+          console.warn(
+            `[oracle] settle on-chain attempt ${attempt + 1}/3 failed:`,
+            (err as Error).message,
+          );
+          if (attempt < 2) await sleep(5000);
+        }
+      }
+      if (!settledOnChain) {
+        console.error(
+          `[oracle] settle on-chain EXHAUSTED for round ${onChainRoundId}; rep not distributed. Verdict=${sim.verdict}, seed=${seedHex.slice(0, 12)}…`,
+        );
       }
     }
   } else {
@@ -235,9 +251,19 @@ async function runOneRound(): Promise<void> {
   currentState.resolution = resolution;
   try { recordResolution(resolution); } catch { /* best-effort */ }
   bus.publish({ type: "round.resolved", data: resolution });
-  currentState.phase = "settled";
-  try { recordSettled(onChainRoundId); } catch { /* best-effort */ }
-  bus.publish({ type: "round.phase", data: { roundId: onChainRoundId, phase: "settled" } });
+  // ONLY mark this round as "settled" in the local DB if the on-chain
+  // settle() tx actually succeeded. Otherwise it's still "resolved" (verdict
+  // known) but not "settled" (rep not distributed), so the UI doesn't lie.
+  if (settledOnChain || !config.contractId) {
+    currentState.phase = "settled";
+    try { recordSettled(onChainRoundId); } catch { /* best-effort */ }
+    bus.publish({ type: "round.phase", data: { roundId: onChainRoundId, phase: "settled" } });
+  } else {
+    // Stay in "reveal" phase rather than promoting to "settled"; the next
+    // round will move things forward anyway.
+    console.warn(`[oracle] round ${onChainRoundId} resolved but NOT settled on-chain — leaving phase=reveal`);
+    bus.publish({ type: "round.phase", data: { roundId: onChainRoundId, phase: "reveal" } });
+  }
 
   // Generate an AI narrative summary in the background. We don't await — it
   // can finish a few seconds after the round is technically settled and the
