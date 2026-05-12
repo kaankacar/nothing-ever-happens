@@ -1,0 +1,30 @@
+{
+  "name": "@mirofish/oracle",
+  "version": "0.0.1",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@mirofish/shared": "workspace:*",
+    "@noble/curves": "^1.7.0",
+    "@noble/hashes": "^1.6.1",
+    "@stellar/stellar-sdk": "^14.0.0-rc.3",
+    "better-sqlite3": "^11.7.0",
+    "dotenv": "^16.4.7",
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

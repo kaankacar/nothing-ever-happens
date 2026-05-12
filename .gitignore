@@ -1,0 +1,21 @@
+node_modules/
+.pnpm-store/
+dist/
+build/
+.next/
+.turbo/
+.cache/
+target/
+*.wasm
+.DS_Store
+.env
+.env.local
+.env.*.local
+*.log
+.vercel/
+coverage/
+.stellar/
+deployments/local/
+
+# Local Claude Code session state — not part of the project
+.claude/
